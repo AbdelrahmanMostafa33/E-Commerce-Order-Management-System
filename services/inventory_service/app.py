@@ -46,9 +46,11 @@ def db_test():
     finally:
         conn.close()
 
-
 # -----------------------------
 # Run Server
 # -----------------------------
 if __name__ == "__main__":
     app.run(port=5002, debug=True)
+
+
+
