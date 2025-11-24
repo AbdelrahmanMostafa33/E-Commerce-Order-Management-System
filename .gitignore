@@ -1,0 +1,42 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# --- Virtual environment ---
+venv/
+env/
+.venv/
+ENV/
+
+# --- Environment variable files ---
+*.env
+.env
+
+# --- IDE / Editor files ---
+# VS Code
+.vscode/
+
+# PyCharm / JetBrains
+.idea/
+
+# --- OS / System files ---
+# Windows
+Thumbs.db
+desktop.ini
+
+# Mac
+.DS_Store
+
+# --- Logs ---
+*.log
+
+# --- Build / Packaging ---
+build/
+dist/
+*.egg-info/
+
+# --- Temporary / cache ---
+.cache/
