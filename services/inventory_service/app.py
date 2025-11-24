@@ -1,24 +1,54 @@
-# Import the Flask class from the flask module
-# Flask is a micro web framework in Python that allows you to create web applications easily
-from flask import Flask
+# services/inventory_service/app.py
 
-# Create an instance of the Flask class
-# __name__ is a special Python variable that is set to the name of the module.
-# Flask uses it to know where to look for templates, static files, etc.
+from flask import Flask, jsonify, request
+import mysql.connector
+
 app = Flask(__name__)
 
-# Define a route for the root URL "/"
-# @app.route("/") is a decorator that tells Flask to execute the following function
-# when someone accesses the root URL of this web application
+# Use your real database credentials
+DB_CONFIG = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'Omar@11122002',
+    'database': 'ecommerce_system',
+    'port': 3306
+}
+
+
+# -----------------------------
+# Database Connection Function
+# -----------------------------
+def db_conn():
+    return mysql.connector.connect(**DB_CONFIG)
+
+
+# -----------------------------
+# Home Route (to test server)
+# -----------------------------
 @app.route("/")
 def home():
-    # This function returns a simple string that will be displayed in the browser
     return "Inventory Service Running"
 
-# This block ensures that the app runs only if this script is executed directly,
-# and not if it is imported as a module in another script
+
+# -----------------------------
+# DB Test Route
+# -----------------------------
+@app.route("/db_test")
+def db_test():
+    try:
+        conn = db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM inventory")
+        result = cursor.fetchone()
+        return jsonify({"inventory_count": result[0]})
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)})
+    finally:
+        conn.close()
+
+
+# -----------------------------
+# Run Server
+# -----------------------------
 if __name__ == "__main__":
-    # Run the Flask web server
-    # port=5001 means the server will listen on port 5001 (default is 5000)
-    # You can access this app in your browser at http://127.0.0.1:5002/
-    app.run(port=5002)
+    app.run(port=5002, debug=True)
