@@ -62,7 +62,5 @@
 --  (2, 10, 15.00),
 --  (3, 10, 12.00);
 
-SELECT COUNT(*) FROM inventory ;
-
 
 
