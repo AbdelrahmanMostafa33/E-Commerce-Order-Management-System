@@ -10,7 +10,7 @@ set TOMCAT_PATH=C:\tomcat10
 
 echo [1/6] Starting Tomcat from %TOMCAT_PATH% ...
 start "TOMCAT 8080" "%TOMCAT_PATH%\bin\startup.bat"
-timeout /t 10 >nul
+timeout /t 5 >nul
 
 echo [2/6] Starting Order Service       (5001)
 start "Order 5001"       cmd /c "cd /d %~dp0services\order_service       && python app.py"
