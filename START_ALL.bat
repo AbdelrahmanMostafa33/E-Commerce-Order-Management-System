@@ -6,7 +6,7 @@ echo ================================================
 echo.
 
 :: CHANGE THIS PATH TO WHERE YOU EXTRACTED TOMCAT
-set TOMCAT_PATH=C:\tomcat10
+set TOMCAT_PATH=C:\apache-tomcat-10\apache-tomcat-10.1.49
 
 echo [1/6] Starting Tomcat from %TOMCAT_PATH% ...
 start "TOMCAT 8080" "%TOMCAT_PATH%\bin\startup.bat"
