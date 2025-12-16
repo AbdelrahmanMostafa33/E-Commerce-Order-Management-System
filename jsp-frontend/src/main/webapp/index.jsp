@@ -1,14 +1,60 @@
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<!DOCTYPE html>
+<%
+        List<Map<String ,Object>> products =(List<Map<String, Object>>) request.getAttribute("products");
+        if (products == null) {
+            response.sendRedirect("inventory");
+            return;
+        }
+%>
 <html>
-<head><title>Phase 1 Done</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Available Products</title>
+    <link rel="stylesheet" href="css/style2.css">
+
+
+</head>
 <body>
-    <h1>E-Commerce Order Management System</h1>
-    <h2>Phase 1 – Setup Completed Successfully</h2>
-    <p>Tomcat running on port 8080<br/>
-       5 Flask microservices running on ports 5001–5005<br/>
-       Database ecommerce_system ready</p>
-    <hr>
-    <p>Ready for Phase 2</p>
+<div class ="container">
+    <h1>Available Products</h1>
+
+    <%
+        if (products.isEmpty()){
+    %>
+    <p>No products available.</p>
+    <%
+        }else {
+
+        %>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity Available</th>
+            </tr>
+            <%
+                for (Map<String, Object> product : products) {
+            %>
+            <tr>
+                <td><%= product.get("id") %></td>
+                <td><%= product.get("name") %></td>
+                <td><%= product.get("price") %></td>
+                <td><%= product.get("quantity_available") %></td>
+            </tr>
+            <% } %>
+        </table>
+    <% } %>
+    <br>
+    <form action="checkout.jsp" method="get">
+        <button type="submit">Place Order</button>
+    </form>
+
+
+</div>
 </body>
 </html>
+

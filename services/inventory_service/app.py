@@ -18,6 +18,17 @@ def home():
 def db_conn():
     return mysql.connector.connect(**DB_CONFIG)
 
+
+@app.route('/api/inventory', methods=['GET'])
+def get_all_inventory():
+    conn = db_conn()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM inventory")
+    products = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(products),200
+
 @app.route('/api/inventory/check/<int:product_id>', methods=['GET'])
 def check_inventory(product_id):
     conn = db_conn()
