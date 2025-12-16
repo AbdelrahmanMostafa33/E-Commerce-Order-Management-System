@@ -11,21 +11,41 @@ DB_CONFIG = {
     'database': 'ecommerce_system'  
 }
 
-
-INVENTORY_CHECK_URL = 'http://inventory_service:5002/api/inventory/check'
-INVENTORY_UPDATE_URL = 'http://inventory_service:5002/api/inventory/update'
-PRICING_URL = 'http://pricing_service:5003/api/pricing/calculate'
-
+INVENTORY_CHECK_URL = 'http://localhost:5002/api/inventory/check'
+INVENTORY_UPDATE_URL = 'http://localhost:5002/api/inventory/update'
+PRICING_URL = 'http://localhost:5003/api/pricing/calculate'
 
 
 def db_conn():
     return mysql.connector.connect(**DB_CONFIG)
 
+
+
 @app.route('/')
 def home():
     return "<h2>ORDER SERVICE IS RUNNING → Port 5001</h2>"         
 
-
+@app.route('/db_test')
+def test_db():
+    try:
+        conn = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='@Nour123456',      # ← your password
+            database='ecommerce_system'
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM customers;")
+        count = cursor.fetchone()[0]     # ← this gets the number
+        conn.close()
+        
+        return f"""
+        <h1 style='color:green'>DB CONNECTION SUCCESSFUL!</h1>
+        <h2>Number of customers in database: <strong>{count}</strong></h2>
+        """
+    
+    except Exception as e:
+        return f"<h1 style='color:red'>DB CONNECTION FAILED</h1><p>Error: {e}</p>"
 
 @app.route('/api/orders/create', methods=['POST'], strict_slashes=False)
 def create_order():
