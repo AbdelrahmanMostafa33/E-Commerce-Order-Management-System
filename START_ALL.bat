@@ -5,13 +5,6 @@ echo   E-COMMERCE SYSTEM - ONE-CLICK START (PHASEPT 2025)
 echo ================================================
 echo.
 
-:: CHANGE THIS PATH TO WHERE YOU EXTRACTED TOMCAT
-set TOMCAT_PATH=C:\apache-tomcat-10\apache-tomcat-10.1.49
-
-echo [1/6] Starting Tomcat from %TOMCAT_PATH% ...
-start "TOMCAT 8080" "%TOMCAT_PATH%\bin\startup.bat"
-timeout /t 5 >nul
-
 echo [2/6] Starting Order Service       (5001)
 start "Order 5001"       cmd /c "cd /d %~dp0services\order_service       && python app.py"
 
@@ -29,7 +22,6 @@ start "Notification 5005" cmd /c "cd /d %~dp0services\notification_service && py
 
 echo.
 echo ALL DONE!
-echo → Open: http://localhost:8080/ecommerce
 echo → Services: 5001 to 5005
 echo.
 pause
