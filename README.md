@@ -74,9 +74,11 @@ This document provides detailed API documentation for the backend Flask microser
 
 ```json
 {
-  "customer_id": 1,
-  "product_id": 2,
-  "quantity": 3
+"customer_id": 1,
+"products": [
+{ "product_id": 1, "quantity": 2 },
+{ "product_id": 3, "quantity": 1 }
+]
 }
 ```
 
@@ -84,13 +86,15 @@ This document provides detailed API documentation for the backend Flask microser
 
 ```json
 {
-  "message": "Order created successfully",
-  "order_id": 101,
-  "product_id": 2,
-  "quantity": 3,
-  "total_amount": 899.97,
-  "status": "CONFIRMED",
-  "created_at": "2025-12-18 12:30:00"
+"message": "Order created successfully",
+"order_id": 101,
+"total_amount": 1239.95,
+"products": [
+{ "product_id": 1, "quantity": 2 },
+{ "product_id": 3, "quantity": 1 }
+],
+"status": "CONFIRMED",
+"created_at": "2025-12-18 12:30:00"
 }
 ```
 
@@ -107,13 +111,11 @@ This document provides detailed API documentation for the backend Flask microser
 
 ```json
 {
-  "order_id": 101,
-  "customer_id": 1,
-  "product_id": 2,
-  "quantity": 3,
-  "total_amount": 899.97,
-  "status": "CONFIRMED",
-  "created_at": "2025-12-18 12:30:00"
+"order_id": 101,
+"customer_id": 1,
+"total_amount": 1239.95,
+"status": "CONFIRMED",
+"created_at": "2025-12-18 12:30:00"
 }
 ```
 
@@ -136,8 +138,18 @@ This document provides detailed API documentation for the backend Flask microser
 
 ```json
 [
-  {"product_id":1, "product_name":"Laptop", "quantity_available":50, "unit_price":999.99},
-  {...}
+{
+"product_id": 1,
+"product_name": "Laptop",
+"quantity_available": 50,
+"unit_price": 999.99
+},
+{
+"product_id": 2,
+"product_name": "Mouse",
+"quantity_available": 200,
+"unit_price": 29.99
+}
 ]
 ```
 
@@ -192,18 +204,6 @@ This document provides detailed API documentation for the backend Flask microser
 ## 3️⃣ Pricing Service (Port 5003)
 
 **Base URL:** `http://localhost:5003`
-
-### **Home**
-
-**GET** `/`
-
-* Returns service status
-
-**Response:**
-
-```html
-<h2>PRICING SERVICE IS RUNNING → Port 5003</h2>
-```
 
 ### **Calculate Price**
 
