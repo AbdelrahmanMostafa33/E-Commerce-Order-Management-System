@@ -33,8 +33,10 @@ def create_order():
 
     try: 
         customer_id = int(data['customer_id'])
-        product_id = int(data['product_id'])
-        quantity = int(data['quantity'])
+        products = data['products']
+        if not isinstance(products, list) or len(products) == 0:
+            raise ValueError("Products must be a non-empty list")
+
        
     except (KeyError, TypeError, ValueError):
         return jsonify({'error': 'Invalid input data'}), 400
@@ -43,7 +45,15 @@ def create_order():
     #Generate order ID and timestamp
     
     created_at = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    total_amount = 0
 
+    for item in products:
+        try:
+            product_id = int(item['product_id'])
+            quantity = int(item['quantity'])
+        except (KeyError, TypeError, ValueError):
+            return jsonify({'error': 'Invalid product data'}), 400
+        
 
     #check  the inventory
     inv_check_response = requests.get(f"{INVENTORY_CHECK_URL}/{product_id}")
@@ -71,7 +81,7 @@ def create_order():
     
 
     pricing_data = pricing_response.json()
-    total_amount = pricing_data['total_price']
+    total_amount += pricing_data['total_price']
 
     #save the created order to db
     conn = db_conn()
@@ -93,29 +103,17 @@ def create_order():
         conn.close()
     
     #Update inventory
-    inv_update_response = requests.put(INVENTORY_UPDATE_URL, json={
-        'product_id': product_id,
-        'quantity': quantity
-    })
-
-    if inv_update_response.status_code != 200:
-        
-        try:
-            details = inv_update_response.json()
-        except ValueError:
-            details = inv_update_response.text
-
-        return jsonify({
-            'error': 'Inventory update failed',
-            'details': details
-        }), 400
+    for item in products:
+        requests.put(INVENTORY_UPDATE_URL, json={
+            'product_id': item['product_id'],
+            'quantity': item['quantity']
+        })
 
 
     return jsonify({
         'message': 'Order created successfully',
         'order_id': order_id,
-        'product_id': product_id,
-        'quantity': quantity,
+        'products': products,
         'total_amount': total_amount,
         'status': 'CONFIRMED',
         'created_at': created_at

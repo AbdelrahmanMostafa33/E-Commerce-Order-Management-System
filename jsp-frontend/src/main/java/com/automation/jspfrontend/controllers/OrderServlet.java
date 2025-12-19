@@ -16,7 +16,11 @@ public class OrderServlet extends HttpServlet {
         String productId = request.getParameter("product_id");
         String quantity = request.getParameter("quantity");
 
-        String jsonPayload = String.format("{\"customer_id\":%s,\"product_id\":%s,\"quantity\":%s}",customerId, productId, quantity);
+        String jsonPayload =
+                "{ \"customer_id\": " + customerId + "," +
+                        "  \"products\": [" +
+                        "     { \"product_id\": " + productId + ", \"quantity\": " + quantity + " }" +
+                        "  ] }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest orderRequest = HttpRequest.newBuilder()
