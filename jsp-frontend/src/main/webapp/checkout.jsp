@@ -1,14 +1,8 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: dell
-  Date: 12/16/2025
-  Time: 4:50 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Checkout</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +12,7 @@
         }
 
         .container {
-            width: 50%;
+            width: 60%;
             margin: 50px auto;
             background: white;
             padding: 30px;
@@ -29,40 +23,58 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
         }
 
-        form label {
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        form input {
-            width: 100%;
-            padding: 8px;
+        .product-row {
+            display: flex;
+            gap: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        }
+
+        .product-row input {
+            flex: 1;
+            padding: 8px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px;
             background-color: #28a745;
             border: none;
             color: white;
             cursor: pointer;
             border-radius: 4px;
             font-size: 16px;
-            margin-top: 15px;
+            margin-top: 10px;
             width: 100%;
         }
 
         button:hover {
             background-color: #218838;
         }
+
+        .add-btn {
+            background-color: #120c5e;
+        }
+
+        .add-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
+
+    <script>
+        function addProductRow() {
+            const container = document.getElementById("products");
+
+            const row = document.createElement("div");
+            row.className = "product-row";
+
+            row.innerHTML =
+                '<input type="number" name="product_id[]" placeholder="Product ID" required>' +
+                '<input type="number" name="quantity[]" placeholder="Quantity" required>';
+
+            container.appendChild(row);
+        }
+    </script>
 
 </head>
 <body>
@@ -71,16 +83,26 @@
     <h1>Place Your Order</h1>
 
     <form action="submitOrder" method="post">
+
         <label>Customer ID</label>
         <input type="number" name="customer_id" required>
 
-        <label>Product ID</label>
-        <input type="number" name="product_id" required>
+        <h3>Products</h3>
 
-        <label>Quantity</label>
-        <input type="number" name="quantity" required>
+        <div id="products">
+            <div class="product-row">
+                <input type="number" name="product_id[]" placeholder="Product ID" required>
+                <input type="number" name="quantity[]" placeholder="Quantity" required>
+            </div>
+        </div>
 
-        <button type="submit">Submit Order</button>
+        <button type="button" class="add-btn" onclick="addProductRow()">
+            + Add Another Product
+        </button>
+
+        <button type="submit">
+            Submit Order
+        </button>
 
     </form>
 </div>

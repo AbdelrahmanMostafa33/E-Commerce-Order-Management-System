@@ -46,6 +46,8 @@ def create_order():
     
     created_at = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     total_amount = 0
+    order_items = []
+
 
     for item in products:
         try:
@@ -54,45 +56,52 @@ def create_order():
         except (KeyError, TypeError, ValueError):
             return jsonify({'error': 'Invalid product data'}), 400
         
+        #check  the inventory
+        inv_check_response = requests.get(f"{INVENTORY_CHECK_URL}/{product_id}")
+        if inv_check_response.status_code != 200:
+            return jsonify({'error': f'Product {product_id} not found'}), 404
+        
+        inventory_data = inv_check_response.json()
+        if inventory_data['quantity_available'] < quantity:
+            return jsonify({'error': 'Insufficient stock in inventory', 'product_id': product_id ,'available_quantity': inventory_data['quantity_available']}), 400
 
-    #check  the inventory
-    inv_check_response = requests.get(f"{INVENTORY_CHECK_URL}/{product_id}")
-    if inv_check_response.status_code != 200:
-        try:
-            details = inv_check_response.json()
-        except ValueError:
-            details = inv_check_response.text
-        return jsonify({'error': 'Inventory check failed', 'details': details}), 400
-    
-    inventory_data = inv_check_response.json()
-    if inventory_data['quantity_available'] < quantity:
-        return jsonify({'error': 'Insufficient stock in inventory', 'available_quantity': inventory_data['quantity_available']}), 400
+        #Calculate pricing
+        pricing_response = requests.post(PRICING_URL, json={
+            'product_id': product_id,
+            'quantity': quantity})
+        if pricing_response.status_code != 200:
+            return jsonify({'error': 'Pricing calculation failed'}), 400
+        
 
-    #Calculate pricing
-    pricing_response = requests.post(PRICING_URL, json={
-        'product_id': product_id,
-        'quantity': quantity})
-    if pricing_response.status_code != 200:
-        try:
-            details = pricing_response.json()
-        except ValueError:
-            details = pricing_response.text
-        return jsonify({'error': 'Pricing calculation failed', 'details': details}), 400
-    
+        pricing_data = pricing_response.json()
+        total_amount += pricing_data['total_price']
 
-    pricing_data = pricing_response.json()
-    total_amount += pricing_data['total_price']
+        order_items.append({
+            'product_id': product_id,
+            'quantity': quantity,
+            'unit_price': pricing_data['unit_price'],
+            'total_price': pricing_data['total_price']
+        })
 
     #save the created order to db
     conn = db_conn()
     try:
         cur = conn.cursor()
+        # Insert order header
         cur.execute(
-            "INSERT INTO orders (customer_id, product_id, quantity, total_amount, status, created_at) "
-            "VALUES (%s, %s, %s, %s, %s, %s)",
-            (customer_id, product_id, quantity, total_amount, 'CONFIRMED', created_at)
+            """INSERT INTO orders (customer_id, total_amount, status, created_at)
+               VALUES (%s, %s, %s, %s)""",
+            (customer_id, total_amount, 'CONFIRMED', created_at)
         )
         order_id = cur.lastrowid
+
+        # Insert order items
+        for item in order_items:
+            cur.execute(
+                """INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price)
+                   VALUES (%s, %s, %s, %s, %s)""",
+                (order_id, item['product_id'], item['quantity'], item['unit_price'], item['total_price'])
+            )
 
 
         conn.commit()
@@ -103,7 +112,7 @@ def create_order():
         conn.close()
     
     #Update inventory
-    for item in products:
+    for item in order_items:
         requests.put(INVENTORY_UPDATE_URL, json={
             'product_id': item['product_id'],
             'quantity': item['quantity']
@@ -113,7 +122,8 @@ def create_order():
     return jsonify({
         'message': 'Order created successfully',
         'order_id': order_id,
-        'products': products,
+        'customer_id': customer_id,
+        'items': order_items,
         'total_amount': total_amount,
         'status': 'CONFIRMED',
         'created_at': created_at
@@ -125,11 +135,24 @@ def get_order(order_id):
     conn = db_conn()
     try:
         cur = conn.cursor(dictionary=True)
+        # Order header
         cur.execute("SELECT * FROM orders WHERE order_id = %s", (order_id,))
         order = cur.fetchone()
         if not order:
             return jsonify({'error': 'Order not found'}), 404
         
+        # Order items
+        cur.execute(
+            """SELECT oi.product_id, i.product_name, oi.quantity,
+                      oi.unit_price, oi.total_price
+               FROM order_items oi
+               JOIN inventory i ON oi.product_id = i.product_id
+               WHERE oi.order_id = %s""",
+            (order_id,)
+        )
+        order_items = cur.fetchall()
+        order['items'] = order_items
+              
     except Error as e:
         return jsonify({'error': 'Database error', 'details': str(e)}), 500
     finally:

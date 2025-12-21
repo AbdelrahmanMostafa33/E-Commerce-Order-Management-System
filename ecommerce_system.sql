@@ -50,6 +50,8 @@ INSERT INTO inventory (product_id, product_name, quantity_available, unit_price,
 (4,'Monitor',75,299.99,'2025-11-25 19:05:40'),
 (5,'Headphones',100,149.99,'2025-11-25 19:05:40');
 
+INSERT INTO inventory (product_id, product_name, quantity_available, unit_price, last_updated) VALUES
+(6,'screen',300,200,'2025-11-25 19:05:40')
 /* ===============================
    NOTIFICATION LOG
 ================================ */
@@ -83,6 +85,9 @@ INSERT INTO pricing_rules (rule_id, product_id, min_quantity, discount_percentag
 (2,2,10,15.00),
 (3,3,10,12.00);
 
+INSERT INTO pricing_rules (rule_id, product_id, min_quantity, discount_percentage) VALUES
+(4,6,5,50.00)
+
 /* ===============================
    TAX RATES
 ================================ */
@@ -101,26 +106,33 @@ INSERT INTO tax_rates (region, tax_rate) VALUES
 /* ===============================
   Orders
 ================================ */
-
+DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
   order_id INT AUTO_INCREMENT PRIMARY KEY,
   customer_id INT NOT NULL,
-  product_id INT NOT NULL,
-  quantity INT NOT NULL,
   total_amount DECIMAL(12,2),
   status VARCHAR(30),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-);
+) ENGINE=InnoDB;
+
+
+CREATE TABLE order_items (
+  order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT NOT NULL,
+  unit_price DECIMAL(10,2),
+  total_price DECIMAL(12,2),
+  FOREIGN KEY (order_id) REFERENCES orders(order_id),
+  FOREIGN KEY (product_id) REFERENCES inventory(product_id)
+) ENGINE=InnoDB;
+
+
+
 select * From inventory;
 
 select * FROM orders;
 
-
-
 SELECT * FROM customers WHERE customer_id = 1;
-
-
-
-

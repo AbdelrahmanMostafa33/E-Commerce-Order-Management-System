@@ -13,15 +13,30 @@ public class OrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String customerId = request.getParameter("customer_id");
-        String productId = request.getParameter("product_id");
-        String quantity = request.getParameter("quantity");
+        String[] productIds = request.getParameterValues("product_id[]");
+        String[] quantities = request.getParameterValues("quantity[]");
+
+        if (productIds == null || quantities == null || productIds.length != quantities.length) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product data");
+            return;
+        }
+
+        // Build products JSON array
+        StringBuilder productsJson = new StringBuilder("[");
+        for (int i = 0; i < productIds.length; i++) {
+            productsJson.append("{")
+                    .append("\"product_id\":").append(productIds[i]).append(",")
+                    .append("\"quantity\":").append(quantities[i])
+                    .append("}");
+            if (i < productIds.length - 1) {
+                productsJson.append(",");
+            }
+        }
+        productsJson.append("]");
 
         String jsonPayload =
                 "{ \"customer_id\": " + customerId + "," +
-                        "  \"products\": [" +
-                        "     { \"product_id\": " + productId + ", \"quantity\": " + quantity + " }" +
-                        "  ] }";
-
+                        "  \"products\": " + productsJson + " }";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest orderRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5001/api/orders/create"))
