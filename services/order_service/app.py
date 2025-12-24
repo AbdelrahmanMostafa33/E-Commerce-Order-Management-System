@@ -7,7 +7,7 @@ app = Flask(__name__)
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '@Nour123456',      # ← your password
+    'password': '',      # ← your password
     'database': 'ecommerce_system'  
 }
 

@@ -5,7 +5,9 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.*;
 
 @WebServlet("/submitOrder")
@@ -51,6 +53,24 @@ public class OrderServlet extends HttpServlet {
         }catch(InterruptedException e){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        // Update loyalty
+        URL loyaltyUrl = new URL("http://localhost:5004/api/customers/" + customerId + "/loyalty");
+        HttpURLConnection loyaltyCon = (HttpURLConnection) loyaltyUrl.openConnection();
+        loyaltyCon.setRequestMethod("PUT");
+        loyaltyCon.setDoOutput(true);
+        loyaltyCon.getOutputStream().write("{\"points\":10}".getBytes());
+
+        // Send notification
+        URL notifyUrl = new URL("http://localhost:5005/api/notifications/send");
+        HttpURLConnection notifyCon = (HttpURLConnection) notifyUrl.openConnection();
+        notifyCon.setRequestMethod("POST");
+        notifyCon.setDoOutput(true);
+        String orderId = null;
+        notifyCon.getOutputStream().write(
+            ("{\"order_id\":" + orderId + ",\"customer_id\":" + customerId + "}").getBytes()
+        );
+
 
     }
 }
