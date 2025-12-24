@@ -20,6 +20,20 @@ ORDER_SERVICE_URL = "http://localhost:5001/api/orders"
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
+# Get all customers
+@app.route("/api/customers", methods=["GET"])
+def get_all_customers():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT customer_id, name FROM customers")
+    customers = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(customers)
+
 # Get customer profile
 @app.route("/api/customers/<int:customer_id>", methods=["GET"])
 def get_customer(customer_id):

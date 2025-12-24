@@ -13,21 +13,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-@WebServlet("/ordersHistory")
-public class OrdersHistoryServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+@WebServlet("/products")
+public class ProductServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        int customerId = Integer.parseInt(req.getParameter("customer_id"));
-
-        URL url = new URL("http://localhost:5004/api/customers/" + customerId + "/orders");
+        // call inventory service
+        URL url = new URL("http://localhost:5002/api/inventory/products");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String ordersJson = in.readLine();
+        String json = new BufferedReader(
+            new InputStreamReader(con.getInputStream())
+        ).readLine();
 
-        req.setAttribute("orders", ordersJson);
-        req.getRequestDispatcher("view_orders_history.jsp").forward(req, resp);
+        req.setAttribute("products", json);
+        req.getRequestDispatcher("index.jsp").forward(req, res);
     }
 }
+
+

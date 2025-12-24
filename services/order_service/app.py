@@ -23,7 +23,36 @@ def db_conn():
 
 @app.route('/')
 def home():
-    return "<h2>ORDER SERVICE IS RUNNING → Port 5001</h2>"         
+    return "<h2>ORDER SERVICE IS RUNNING → Port 5001</h2>"  
+
+
+@app.route('/api/orders', methods=['GET'])
+def get_orders_by_customer():
+    customer_id = request.args.get('customer_id')
+
+    if not customer_id:
+        return jsonify({'error': 'customer_id is required'}), 400
+
+    conn = db_conn()
+    try:
+        cur = conn.cursor(dictionary=True)
+
+        cur.execute("""
+            SELECT order_id, total_amount, status, created_at
+            FROM orders
+            WHERE customer_id = %s
+            ORDER BY created_at DESC
+        """, (customer_id,))
+
+        orders = cur.fetchall()
+
+        return jsonify(orders), 200
+
+    except Error as e:
+        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+
+    finally:
+        conn.close()       
 
 
 

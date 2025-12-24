@@ -1,10 +1,12 @@
 package com.automation.jspfrontend.controllers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import org.json.JSONObject;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,23 +14,30 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @WebServlet("/profile")
 public class ProfileServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int customerId = Integer.parseInt(req.getParameter("customer_id"));
+        String customerId = request.getParameter("customer_id");
 
-        URL url = new URL("http://localhost:5004/api/customers/" + customerId);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:5004/api/customers/" + customerId))
+                .GET()
+                .build();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String json = in.readLine();
+        try {
+            HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+            JSONObject customer = new JSONObject(res.body());
 
-        req.setAttribute("customer", json);
-        req.getRequestDispatcher("profile.jsp").forward(req, resp);
+            request.setAttribute("customer", customer);
+            request.getRequestDispatcher("profile.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 }
-
+    

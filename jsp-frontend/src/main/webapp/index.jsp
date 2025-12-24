@@ -3,15 +3,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-        List<Map<String ,Object>> products =(List<Map<String, Object>>) request.getAttribute("products");
-        if (products == null) {
-            response.sendRedirect("inventory");
-            return;
-        }
+    List<Map<String, Object>> products = (List<Map<String, Object>>) request.getAttribute("products");
+    List<Map<String, Object>> customers = (List<Map<String, Object>>) request.getAttribute("customers");
+
+    if (products == null || customers == null) {
+        response.sendRedirect("inventory");
+        return;
+    }
 %>
+
 <html>
 <head>
-    <meta charset="UTF-8">
     <title>Available Products</title>
     <style>
         body {
@@ -28,12 +30,6 @@
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            align-content: center;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
         }
 
         table {
@@ -41,82 +37,98 @@
             border-collapse: collapse;
         }
 
-        table th, table td {
+        th, td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
-            text-align: left;
         }
 
         button {
             padding: 10px 20px;
             background-color: #120c5e;
-            border: none;
             color: white;
-            cursor: pointer;
+            border: none;
             border-radius: 4px;
-            font-size: 16px;
-            width: 60%;
-            align-content: center;
-            display: block;
-            margin: 20px auto 0 auto;
+            cursor: pointer;
+            margin-top: 15px;
         }
 
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        input, select {
+        select, input {
             padding: 8px;
             width: 100%;
-            margin-bottom: 10px;
-        }
-
-        p {
-            text-align: center;
-            font-style: italic;
         }
     </style>
-
-
 </head>
+
 <body>
-<div class ="container">
-    <h1>Available Products</h1>
 
-    <%
-        if (products.isEmpty()){
-    %>
-    <p>No products available.</p>
-    <%
-        }else {
+<div class="container">
 
-        %>
+    <h2>Select Customer</h2>
+    <select id="customerSelect" name="customer_id" form="orderForm" required>
+        <option value="">-- Select Customer --</option>
+        <% for (Map<String, Object> c : customers) { %>
+            <option value="<%= c.get("id") %>">
+                <%= c.get("name") %> (ID: <%= c.get("id") %>)
+            </option>
+        <% } %>
+    </select>
+
+    <form id="orderForm" action="checkout" method="post">
+
+        <h2>Available Products</h2>
+
         <table>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Price</th>
+                <th>Available</th>
                 <th>Quantity</th>
             </tr>
-            <%
-                for (Map<String, Object> product : products) {
-            %>
+
+            <% for (Map<String, Object> product : products) { %>
             <tr>
                 <td><%= product.get("id") %></td>
                 <td><%= product.get("name") %></td>
                 <td><%= product.get("price") %></td>
                 <td><%= product.get("quantity_available") %></td>
+                <td>
+                    <input type="number"
+                           name="quantity[]"
+                           min="0"
+                           max="<%= product.get("quantity_available") %>">
+                    <input type="hidden" name="product_id[]" value="<%= product.get("id") %>">
+                </td>
             </tr>
             <% } %>
         </table>
-    <% } %>
-    <br>
-    <form action="checkout.jsp" method="get">
+
         <button type="submit">Place Order</button>
     </form>
 
+    <br>
+
+    <!-- PROFILE + HISTORY BUTTONS -->
+    <form action="profile" method="get">
+        <input type="hidden" name="customer_id" id="profileCustomerId">
+        <button type="submit">View Profile</button>
+    </form>
+
+    <form action="order-history" method="get">
+        <input type="hidden" name="customer_id" id="historyCustomerId">
+        <button type="submit">View Order History</button>
+    </form>
 
 </div>
+
+<script>
+    const customerSelect = document.getElementById("customerSelect");
+
+    customerSelect.addEventListener("change", function () {
+        document.getElementById("profileCustomerId").value = this.value;
+        document.getElementById("historyCustomerId").value = this.value;
+    });
+</script>
+
 </body>
 </html>
-
