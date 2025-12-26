@@ -27,11 +27,7 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("DEBUG customerId=" + customerId);
-        System.out.println("DEBUG productIds=" + Arrays.toString(productIds));
-        System.out.println("DEBUG quantities=" + Arrays.toString(quantities));
 
-        HttpClient client = HttpClient.newHttpClient();
         JSONArray productsArray = new JSONArray();
 
         for (int i = 0; i < productIds.length; i++) {
@@ -39,21 +35,6 @@ public class OrderServlet extends HttpServlet {
                 int productId = Integer.parseInt(productIds[i]);
                 int qty = Integer.parseInt(quantities[i]);
 
-                // Check stock
-                HttpRequest stockRequest = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:5002/api/inventory/check/" + productId))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> stockResponse = client.send(stockRequest, HttpResponse.BodyHandlers.ofString());
-                JSONObject stockJson = new JSONObject(stockResponse.body());
-
-                int availableQty = stockJson.getInt("quantity_available"); // make sure it matches inventory service
-                if (qty > availableQty) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                            "Not enough stock for product ID: " + productId);
-                    return;
-                }
 
                 JSONObject item = new JSONObject();
                 item.put("product_id", productId);
@@ -73,6 +54,7 @@ public class OrderServlet extends HttpServlet {
         orderPayload.put("products", productsArray);
 
         // Send to Order Service
+        HttpClient client = HttpClient.newHttpClient();
         HttpRequest orderRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5001/api/orders/create"))
                 .header("Content-Type", "application/json")
@@ -80,12 +62,16 @@ public class OrderServlet extends HttpServlet {
                 .build();
 
         try {
-            HttpResponse<String> orderResponse = client.send(orderRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> orderResponse = client.send(orderRequest, HttpResponse.BodyHandlers.ofString());      if (orderResponse.statusCode() >= 400) {
+                response.sendError(orderResponse.statusCode(), orderResponse.body());
+                return;
+            }
+
             JSONObject orderJson = new JSONObject(orderResponse.body());
 
             // Forward to confirmation page
-        request.setAttribute("orderResponse", orderJson.toString(4)); // pretty print JSON
-        request.getRequestDispatcher("confirmation.jsp").forward(request, response);
+            request.setAttribute("orderResponse", orderJson.toString(4)); // pretty print JSON
+            request.getRequestDispatcher("confirmation.jsp").forward(request, response);
 
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to create order");

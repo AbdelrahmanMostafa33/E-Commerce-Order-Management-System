@@ -14,23 +14,27 @@
     <title>Order Review</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
             padding: 0;
         }
 
         .container {
             width: 70%;
+            max-width: 900px;
             margin: 40px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
-            margin-top: 0;
+            color: #0d1b4c; /* dark blue */
+            margin: 20px 0;
+            text-align: center;
+            font-weight:700;
         }
 
         table {
@@ -46,37 +50,87 @@
         }
 
         th {
-            background-color: #f0f0f0;
+            background-color: #0d1b4c; /* dark blue */
+            color: #fff;
+            font-weight: 500;
         }
 
-        button {
-            padding: 10px 20px;
-            background-color: #120c5e;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
-        .total {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 20px;
+        tr:hover {
+            background-color: #e6f0ff;
         }
 
+        /* Back button larger */
         a.back {
             display: inline-block;
-            margin-bottom: 20px;
-            text-decoration: none;
-            color: #120c5e;
+            font-size: 18px;
             font-weight: bold;
+            padding: 12px 25px;
+            background-color: #0d1b4c;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         a.back:hover {
-            text-decoration: underline;
+            background-color: #1a2b66;
+            transform: translateY(-2px);
+        }
+
+        /* Total price aligned right */
+        .total {
+            font-weight: bold;
+            font-size: 23px;
+            text-align: right;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Confirm order button centered */
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #0d1b4c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #1a2b66;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 14px;
+            }
+
+            a.back, button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .total {
+                text-align: center;
+            }
         }
     </style>
+
 </head>
 <body>
 <div class="container">

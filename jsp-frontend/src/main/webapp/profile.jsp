@@ -9,12 +9,49 @@
 <head>
     <title>Customer Profile</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin:0; padding:0; }
-        .container { width: 50%; margin: 40px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; }
-        p { font-size: 16px; line-height: 1.5; }
-        a.button { padding:10px 20px; background-color:#120c5e; color:white; border:none; border-radius:4px; cursor:pointer; text-decoration:none; display:inline-block; margin-top:15px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* center content horizontally */
+            margin: 40px auto 0 auto; /* top margin 40px, auto horizontal centering */
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width:400px; /* container fits its content */
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 20px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        a.button {
+            padding: 10px 20px;
+            background-color: #120c5e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
     </style>
+
 </head>
 <body>
 <div class="container">

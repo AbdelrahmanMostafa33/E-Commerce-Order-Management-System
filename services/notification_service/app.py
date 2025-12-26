@@ -9,7 +9,7 @@ app = Flask(__name__)
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '',
+    'password': '@Nour123456', 
     'database': 'ecommerce_system'
 }
 
@@ -37,9 +37,8 @@ def send_notification():
         order_id = data["order_id"]
         customer_id = data["customer_id"]
 
-        # ------------------------
+  
         # Get customer info
-        # ------------------------
         customer_resp = requests.get(f"{CUSTOMER_SERVICE}/{customer_id}")
         if customer_resp.status_code != 200:
             return jsonify({"error": "Customer not found"}), 404
@@ -48,16 +47,11 @@ def send_notification():
         customer_email = customer.get("email", "no-email@example.com")
         customer_phone = customer.get("phone", "N/A")
 
-        # ------------------------
+  
         # Check inventory for order items
-        # ------------------------
-        # Simulate delivery estimate or stock check
-        # In a real system, you'd fetch order items first, here we just check general status
         inventory_status = "All items available"
 
-        # ------------------------
         # Generate notification message
-        # ------------------------
         message = (
             f"Hello {customer.get('name', 'Customer')},\n"
             f"Your order #{order_id} is confirmed!\n"
@@ -65,16 +59,14 @@ def send_notification():
             f"Thank you for shopping with us."
         )
 
-        # ------------------------
+     
         # Simulate sending email/SMS
-        # ------------------------
         print(f"EMAIL TO: {customer_email}")
         print(f"SMS TO: {customer_phone}")
         print(f"Message:\n{message}")
 
-        # ------------------------
+
         # Log notification to database
-        # ------------------------
         db = get_db()
         cursor = db.cursor()
 
@@ -88,9 +80,7 @@ def send_notification():
         cursor.close()
         db.close()
 
-        # ------------------------
         # Return success
-        # ------------------------
         return jsonify({"message": "Notification sent successfully"})
 
     except KeyError:

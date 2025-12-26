@@ -14,50 +14,120 @@
 
 <html>
 <head>
-    <title>Available Products</title>
     <style>
+        /* General page styling */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
             margin: 0;
             padding: 0;
         }
 
         .container {
-            width: 70%;
+            max-width: 900px;
             margin: 40px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            text-align: center; /* Center all content */
+        }
+
+        h2 {
+            color: #0d1b4c; /* darker blue */
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        select, input[type="number"] {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            width: 80%;
+            max-width: 400px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #0d1b4c;
+            box-shadow: 0 0 5px rgba(13, 27, 76, 0.4);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px 0;
         }
 
         th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #0d1b4c; /* darker blue */
+            color: #fff;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #e6f0ff;
         }
 
         button {
+            background-color: #0d1b4c; /* darker blue */
+            color: #fff;
             padding: 10px 20px;
-            background-color: #120c5e;
-            color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-size: 15px;
             cursor: pointer;
-            margin-top: 15px;
+            margin: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        select, input {
-            padding: 8px;
-            width: 100%;
+        button:hover {
+            background-color: #1a2b66;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Button container for side-by-side layout */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            th, td {
+                padding: 8px 10px;
+            }
+
+            select, input[type="number"] {
+                width: 100%;
+            }
         }
     </style>
 </head>
+
 
 <body>
 
