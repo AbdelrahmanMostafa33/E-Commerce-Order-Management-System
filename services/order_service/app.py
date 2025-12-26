@@ -7,7 +7,7 @@ app = Flask(__name__)
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '',      # ← your password
+    'password': '',     
     'database': 'ecommerce_system'  
 }
 
@@ -146,6 +146,36 @@ def create_order():
             'product_id': item['product_id'],
             'quantity': item['quantity']
         })
+
+    # -------------------------------
+    # Send notification to customer
+    # -------------------------------
+    NOTIFICATION_URL = 'http://localhost:5005/api/notifications/send'
+
+    try:
+        requests.post(NOTIFICATION_URL, json={
+            'order_id': order_id,
+            'customer_id': customer_id
+        })
+    except Exception as e:
+        # Log error, but don't fail the order
+        print(f"Notification failed: {e}")
+
+
+    # -------------------------------
+    # Update loyalty points
+    # -------------------------------
+    LOYALTY_URL = f"http://localhost:5004/api/customers/{customer_id}/loyalty"
+
+    # Rule: 1 point per $10 spent
+    loyalty_points = int(total_amount // 10)
+
+    try:
+        requests.put(LOYALTY_URL, json={
+            "points": loyalty_points
+        })
+    except Exception as e:
+        print(f"Loyalty update failed: {e}")
 
 
     return jsonify({

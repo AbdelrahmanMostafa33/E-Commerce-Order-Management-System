@@ -2,9 +2,7 @@
    DATABASE
 ================================ */
 DROP DATABASE IF EXISTS ecommerce_system;
-CREATE DATABASE ecommerce_system
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE ecommerce_system;
 
 USE ecommerce_system;
 
@@ -51,7 +49,7 @@ INSERT INTO inventory (product_id, product_name, quantity_available, unit_price,
 (5,'Headphones',100,149.99,'2025-11-25 19:05:40');
 
 INSERT INTO inventory (product_id, product_name, quantity_available, unit_price, last_updated) VALUES
-(6,'screen',300,200,'2025-11-25 19:05:40')
+(6,'screen',300,200,'2025-11-25 19:05:40');
 /* ===============================
    NOTIFICATION LOG
 ================================ */
@@ -86,7 +84,7 @@ INSERT INTO pricing_rules (rule_id, product_id, min_quantity, discount_percentag
 (3,3,10,12.00);
 
 INSERT INTO pricing_rules (rule_id, product_id, min_quantity, discount_percentage) VALUES
-(4,6,5,50.00)
+(4,6,5,50.00);
 
 /* ===============================
    TAX RATES
@@ -94,7 +92,7 @@ INSERT INTO pricing_rules (rule_id, product_id, min_quantity, discount_percentag
 DROP TABLE IF EXISTS tax_rates;
 
 CREATE TABLE tax_rates (
-  region VARCHAR(50) NOT NULL,order_itemscustomers
+  region VARCHAR(50) NOT NULL,
   tax_rate DECIMAL(5,2),
   PRIMARY KEY (region)
 ) ENGINE=InnoDB;
@@ -133,6 +131,10 @@ CREATE TABLE order_items (
 
 select * From inventory;
 
+select * From notification_log;
+
 select * FROM orders;
 
-SELECT * FROM customers WHERE customer_id = 1;
+SELECT * FROM customers;
+
+DESCRIBE notification_log;
